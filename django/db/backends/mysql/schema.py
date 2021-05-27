@@ -106,6 +106,17 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                 'column': self.quote_name(field.column),
             }, [effective_default])
 
+    def remove_index(self, model, index):
+        if len(index.fields) > 1:
+            return super().alter_index_together(model, index.fields, [])
+        return super().remove_index(model, index)
+
+    def remove_constraint(self, model, constraint):
+        if len(constraint.fields) > 1:
+            pass
+        return super().remove_constraint(model, constraint)
+
+
     def _field_should_be_indexed(self, model, field):
         create_index = super()._field_should_be_indexed(model, field)
         storage = self.connection.introspection.get_storage_engine(
